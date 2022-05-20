@@ -1,0 +1,9 @@
+[submodule "third-party/CMSIS"]
+	path = third-party/CMSIS
+	url = https://github.com/ARM-software/CMSIS_5
+[submodule "third-party/nrfx"]
+	path = third-party/nrfx
+	url = https://github.com/NordicSemiconductor/nrfx
+[submodule "third-party/tinyusb"]
+	path = third-party/tinyusb
+	url = https://github.com/hathach/tinyusb
