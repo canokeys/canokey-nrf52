@@ -70,6 +70,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Source files  {{{
 
+file(GLOB_RECURSE NRFX_SRCS
+    "${THIRD_PARTY_DIR}/nrfx/drivers/src/*.c"
+)
+
 file(GLOB_RECURSE TINYUSB_SRCS
     "${THIRD_PARTY_DIR}/tinyusb/src/*.c"
 )
@@ -96,6 +100,7 @@ set(NRFX_INCLUDE_DIRS
     "${THIRD_PARTY_DIR}/nrfx"
     "${THIRD_PARTY_DIR}/nrfx/hal"
     "${THIRD_PARTY_DIR}/nrfx/mdk"
+    "${THIRD_PARTY_DIR}/nrfx/drivers/include/"
     "${THIRD_PARTY_DIR}/nrfx/drivers/src/"
 )
 
@@ -120,7 +125,7 @@ include_directories(
 # Build the image {{{
 
 # Compile the sources to an .elf
-add_executable(${TARGET}.elf ${SOURCES} ${TINYUSB_SRCS})
+add_executable(${TARGET}.elf ${SOURCES} ${NRFX_SRCS} ${TINYUSB_SRCS})
 
 # Create a binary from the elf
 add_custom_command(TARGET ${TARGET}.elf POST_BUILD
