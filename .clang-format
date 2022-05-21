@@ -1,0 +1,16 @@
+---
+AlignTrailingComments: 'true'
+AllowShortIfStatementsOnASingleLine: 'true'
+AllowShortLoopsOnASingleLine: 'true'
+AllowShortFunctionsOnASingleLine: 'true'
+ColumnLimit: '0'
+ConstructorInitializerIndentWidth: '0'
+IndentWidth: '4'
+PenaltyBreakComment: '0'
+SortIncludes: 'true'
+SpaceBeforeParens: Never
+SpacesInParentheses: 'false'
+Standard: Auto
+
+...
+
