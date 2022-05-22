@@ -11,8 +11,9 @@ set(THIRD_PARTY_DIR ${BASE_DIR}/third-party)
 
 set(LINKER_SCRIPT "${BASE_DIR}/nrf52840.ld")
 
-set(DEFINITIONS "${DEFINITIONS} -DNRF52840_XXAA")
-set(DEFINITIONS "${DEFINITIONS} -DCFG_BOARD=OPT_BOARD_MAKERDIARY_M2_DOCK")
+add_definitions(-DNRF52840_XXAA)
+add_definitions(-DCFG_BOARD=OPT_BOARD_MAKERDIARY_M2_DOCK)
+add_definitions(-DMBEDTLS_CONFIG_FILE="${BASE_DIR}/config/mbedtls_config.h")
 
 set(CMAKE_C_STANDARD 11)
 set(COMMON_COMPILE_FLAGS "-mcpu=cortex-m4 -mthumb")
@@ -47,6 +48,10 @@ set(SOURCES
 )
 
 add_executable(${TARGET} ${SOURCES} ${NRFX_SRCS} ${TINYUSB_SRCS})
+
+# CanoKey Core
+add_subdirectory(canokey-core)
+target_link_libraries(${TARGET} PRIVATE canokey-core c m nosys)
 
 # Include dirs
 set(CMSIS_INCLUDE_DIRS

@@ -7,3 +7,6 @@
 [submodule "third-party/tinyusb"]
 	path = third-party/tinyusb
 	url = https://github.com/hathach/tinyusb
+[submodule "canokey-core"]
+	path = canokey-core
+	url = https://github.com/canokeys/canokey-core
