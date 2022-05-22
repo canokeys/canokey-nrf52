@@ -43,10 +43,17 @@ extern "C" {
 #define CFG_BOARD_UART_BAUDRATE 115200
 
 //--------------------------------------------------------------------+
-// TODO: Board choose
+// Board selection
+// Select your board in CMakeLists.txt
 //--------------------------------------------------------------------+
 
-#include "boards/makerdiary/m2_dock.h"
+#define OPT_BOARD_MAKERDIARY_M2_DOCK    1
+
+#if CFG_BOARD == OPT_BOARD_MAKERDIARY_M2_DOCK
+    #include "boards/makerdiary/m2_dock.h"
+#else
+    #error "No board selected, please select your board in CMakeLists.txt"
+#endif
 
 //--------------------------------------------------------------------+
 // Board Porting API
