@@ -34,20 +34,15 @@ file(GLOB_RECURSE NRFX_SRCS
     "${THIRD_PARTY_DIR}/nrfx/drivers/src/*.c"
 )
 
-file(GLOB_RECURSE TINYUSB_SRCS
-    "${THIRD_PARTY_DIR}/tinyusb/src/*.c"
-)
-
 set(SOURCES
     "${THIRD_PARTY_DIR}/nrfx/mdk/gcc_startup_nrf52840.S"
     "${THIRD_PARTY_DIR}/nrfx/mdk/system_nrf52.c"
 
     "${BASE_DIR}/src/main.c"
     "${BASE_DIR}/src/board.c"
-    "${BASE_DIR}/src/usb_descriptors.c"
 )
 
-add_executable(${TARGET} ${SOURCES} ${NRFX_SRCS} ${TINYUSB_SRCS})
+add_executable(${TARGET} ${SOURCES} ${NRFX_SRCS})
 
 # CanoKey Core
 add_subdirectory(canokey-core)
@@ -66,13 +61,8 @@ set(NRFX_INCLUDE_DIRS
     "${THIRD_PARTY_DIR}/nrfx/drivers/src/"
 )
 
-set(TINYUSB_INCLUDE_DIRS
-    "${THIRD_PARTY_DIR}/tinyusb/src"
-)
-
 target_include_directories(${TARGET} PRIVATE ${CMSIS_INCLUDE_DIRS})
 target_include_directories(${TARGET} PRIVATE ${NRFX_INCLUDE_DIRS})
-target_include_directories(${TARGET} PRIVATE ${TINYUSB_INCLUDE_DIRS})
 target_include_directories(${TARGET} PRIVATE "${BASE_DIR}/include")
 target_include_directories(${TARGET} PRIVATE "${BASE_DIR}/config")
 
