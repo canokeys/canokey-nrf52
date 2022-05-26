@@ -13,6 +13,7 @@ set(LINKER_SCRIPT "${BASE_DIR}/nrf52840.ld")
 
 add_definitions(-DNRF52840_XXAA)
 add_definitions(-DCFG_BOARD=OPT_BOARD_MAKERDIARY_M2_DOCK)
+add_definitions(-DCFG_TUSB_MCU=OPT_MCU_NRF5X)
 add_definitions(-DMBEDTLS_CONFIG_FILE="${BASE_DIR}/config/mbedtls_config.h")
 
 set(CMAKE_C_STANDARD 11)
@@ -40,13 +41,10 @@ set(SOURCES
 
     "${BASE_DIR}/src/main.c"
     "${BASE_DIR}/src/board.c"
+    "${BASE_DIR}/src/usb.c"
 )
 
 add_executable(${TARGET} ${SOURCES} ${NRFX_SRCS})
-
-# CanoKey Core
-add_subdirectory(canokey-core)
-target_link_libraries(${TARGET} PRIVATE canokey-core c m nosys)
 
 # Include dirs
 set(CMSIS_INCLUDE_DIRS
@@ -65,6 +63,20 @@ target_include_directories(${TARGET} PRIVATE ${CMSIS_INCLUDE_DIRS})
 target_include_directories(${TARGET} PRIVATE ${NRFX_INCLUDE_DIRS})
 target_include_directories(${TARGET} PRIVATE "${BASE_DIR}/include")
 target_include_directories(${TARGET} PRIVATE "${BASE_DIR}/config")
+
+# TinyUSB DCD configure
+set(DCD_INCLUDE_DIRS
+    ${CMSIS_INCLUDE_DIRS}
+    ${NRFX_INCLUDE_DIRS}
+    "${BASE_DIR}/config"
+)
+
+set(TINYUSB_MCU "OPT_MCU_NRF5X" CACHE STRING "TinyUSB MCU name")
+set(TINYUSB_DCD_INCLUDES ${DCD_INCLUDE_DIRS} CACHE STRING "TinyUSB DCD include paths")
+
+# CanoKey Core
+add_subdirectory(canokey-core)
+target_link_libraries(${TARGET} PRIVATE canokey-core c m nosys)
 
 # Generate Git version header
 add_dependencies(${TARGET} gitrev)

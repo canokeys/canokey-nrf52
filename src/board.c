@@ -139,8 +139,22 @@ void board_init(void) {
 // Board porting API
 //--------------------------------------------------------------------+
 
+static bool led_state;
 void board_led_write(bool state) {
     nrf_gpio_pin_write(LED_PIN, state ? LED_STATE_ON : (1 - LED_STATE_ON));
+    led_state = state;
+}
+
+void led_on() {
+    board_led_write(true);
+}
+
+void led_off() {
+    board_led_write(false);
+}
+
+void toggle_led() {
+    board_led_write(!led_state);
 }
 
 uint32_t board_button_read(void) {
@@ -158,6 +172,12 @@ int board_uart_write(void const *buf, int len) {
     return (NRFX_SUCCESS == nrfx_uarte_tx(&_uart_id, (uint8_t const *)buf, (size_t)len)) ? len : 0;
 }
 
+// printf to UART
+int _write(int fd, char * str, int len) {
+    board_uart_write(str, len);
+    return len;
+}
+
 #if CFG_TUSB_OS == OPT_OS_NONE
 volatile uint32_t system_ticks = 0;
 void SysTick_Handler(void) {
@@ -168,6 +188,10 @@ uint32_t board_millis(void) {
     return system_ticks;
 }
 #endif
+
+uint32_t device_get_tick() {
+    return board_millis();
+}
 
 #ifdef SOFTDEVICE_PRESENT
 // process SOC event from SD

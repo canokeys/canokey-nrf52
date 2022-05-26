@@ -27,9 +27,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "board.h"
+
 /*------------- MAIN -------------*/
 int main(void) {
+    board_init();
+    usb_device_init();
+
     while(1) {
+        tud_task();
     }
 
     return 0;
