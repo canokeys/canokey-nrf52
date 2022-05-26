@@ -9,11 +9,17 @@ void usb_resources_alloc(void) {
   memset(&IFACE_TABLE, 0xFF, sizeof(IFACE_TABLE));
   memset(&EP_TABLE, 0xFF, sizeof(EP_TABLE));
 
-  EP_TABLE.hid = ep++;
-  IFACE_TABLE.hid = iface++;
+  EP_TABLE.ctap_hid = ep++;
+  IFACE_TABLE.ctap_hid = iface++;
 
   IFACE_TABLE.webusb = iface++;
 
   EP_TABLE.ccid = ep++;
   IFACE_TABLE.ccid = iface++;
+
+  if (cfg_is_kbd_interface_enable()) {
+    EP_TABLE.kbd_hid = ep;
+    IFACE_TABLE.kbd_hid = iface;
+  }
+
 }
