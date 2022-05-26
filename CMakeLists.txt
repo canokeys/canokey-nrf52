@@ -42,6 +42,7 @@ set(SOURCES
     "${BASE_DIR}/src/main.c"
     "${BASE_DIR}/src/board.c"
     "${BASE_DIR}/src/usb.c"
+    "${BASE_DIR}/src/nfc_dummy.c"
 )
 
 add_executable(${TARGET} ${SOURCES} ${NRFX_SRCS})
@@ -76,7 +77,12 @@ set(TINYUSB_DCD_INCLUDES ${DCD_INCLUDE_DIRS} CACHE STRING "TinyUSB DCD include p
 
 # CanoKey Core
 add_subdirectory(canokey-core)
-target_link_libraries(${TARGET} PRIVATE canokey-core c m nosys)
+target_link_libraries(${TARGET} PRIVATE
+    -Wl,--whole-archive
+    canokey-core
+    -Wl,--no-whole-archive
+)
+target_link_libraries(${TARGET} PRIVATE c m nosys)
 
 # Generate Git version header
 add_dependencies(${TARGET} gitrev)

@@ -56,6 +56,40 @@ extern "C" {
 #endif
 
 //--------------------------------------------------------------------+
+// CanoKey Porting API
+//--------------------------------------------------------------------+
+
+/**
+ * Get a spinlock.
+ *
+ * @param lock      The lock handler, which should be pointed to a uint32_t variable.
+ * @param blocking  If we should wait the lock to be released.
+ *
+ * @return 0 for locking successfully, -1 for failure.
+ */
+int device_spinlock_lock(volatile uint32_t *lock, uint32_t blocking);
+
+/**
+ * Unlock the specific handler.
+ *
+ * @param lock  The lock handler.
+ */
+void device_spinlock_unlock(volatile uint32_t *lock);
+
+/**
+ * Update the value of a variable atomically.
+ *
+ * @param var    The address of variable to update.
+ * @param expect The current value of variable.
+ * @param var    The new value of variable.
+ */
+int device_atomic_compare_and_swap(volatile uint32_t *var, uint32_t expect, uint32_t update);
+
+void led_on(void);
+void led_off(void);
+void device_set_timeout(void (*callback)(void), uint16_t timeout);
+
+//--------------------------------------------------------------------+
 // Board Porting API
 // For simplicity, only one LED and one Button are used
 //--------------------------------------------------------------------+

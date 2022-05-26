@@ -193,6 +193,30 @@ uint32_t device_get_tick() {
     return board_millis();
 }
 
+void device_set_timeout(void (*callback)(void), uint16_t timeout) {
+    (void) callback;
+}
+
+int device_atomic_compare_and_swap(volatile uint32_t *var, uint32_t expect, uint32_t update) {
+  if (*var == expect) {
+    *var = update;
+    return 0;
+  } else {
+    return -1;
+  }
+}
+
+int device_spinlock_lock(volatile uint32_t *lock, uint32_t blocking) {
+  // Not really working, for test only
+  while (*lock) {
+    if (!blocking) return -1;
+  }
+  *lock = 1;
+  return 0;
+}
+void device_spinlock_unlock(volatile uint32_t *lock) { *lock = 0; }
+
+
 #ifdef SOFTDEVICE_PRESENT
 // process SOC event from SD
 uint32_t proc_soc(void) {
