@@ -1,6 +1,8 @@
 #ifndef M2_DOCK_H__
 #define M2_DOCK_H__
 
+#include "nrf_gpio.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,6 +14,7 @@ extern "C" {
 // Button
 #define BUTTON_PIN 19
 #define BUTTON_STATE_ACTIVE 0
+#define BUTTON_PULL NRF_GPIO_PIN_PULLUP
 
 // UART
 #define UART_RX_PIN 15

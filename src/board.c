@@ -24,17 +24,18 @@
  * This file is part of the TinyUSB stack.
  */
 
-#include "board.h"
+#include <board.h>
+#include <common.h>
 
 #include "nrf_gpio.h"
 #include "nrfx.h"
 #include "nrfx_power.h"
+#include "nrfx_timer.h"
 #include "nrfx_uarte.h"
+#include "nrfx_rng.h"
 
-#ifdef SOFTDEVICE_PRESENT
-#include "nrf_sdm.h"
-#include "nrf_soc.h"
-#endif
+uint32_t rng_count = 0;
+uint32_t rng_data_word = 0;
 
 //--------------------------------------------------------------------+
 // Forward USB interrupt events to TinyUSB IRQ Handler
@@ -46,8 +47,9 @@ void USBD_IRQHandler(void) {
 /*------------------------------------------------------------------*/
 /* MACRO TYPEDEF CONSTANT ENUM
  *------------------------------------------------------------------*/
-
 static nrfx_uarte_t _uart_id = NRFX_UARTE_INSTANCE(0);
+nrfx_timer_t m_timer_touch = NRFX_TIMER_INSTANCE(0);
+nrfx_timer_t m_timer_timeout = NRFX_TIMER_INSTANCE(1);
 
 // tinyusb function that handles power event (detected, ready, removed)
 // We must call it within SD's SOC event handler, or set it as power event handler if SD is not enabled.
@@ -71,7 +73,7 @@ void board_init(void) {
     board_led_write(false);
 
     // Button
-    nrf_gpio_cfg_input(BUTTON_PIN, NRF_GPIO_PIN_PULLUP);
+    nrf_gpio_cfg_input(BUTTON_PIN, BUTTON_PULL);
 
     // 1ms tick timer
     SysTick_Config(SystemCoreClock / 1000);
@@ -93,8 +95,24 @@ void board_init(void) {
 
     nrfx_uarte_init(&_uart_id, &uart_cfg, NULL); // uart_handler);
 
+    // Timer
+    nrfx_timer_config_t timer_cfg = NRFX_TIMER_DEFAULT_CONFIG;
+    timer_cfg.bit_width = NRF_TIMER_BIT_WIDTH_32;
+
+    // Touch timer is executed every 10ms
+    nrfx_err_t ret;
+    ret = nrfx_timer_init(&m_timer_touch, &timer_cfg, timer_touch_handler);
+    if(ret != NRFX_SUCCESS) ERR_MSG("touch nrfx_timer_init failed: %d\r\n", ret);
+
+    nrfx_timer_extended_compare(&m_timer_touch, NRF_TIMER_CC_CHANNEL0, nrfx_timer_ms_to_ticks(&m_timer_touch, 10), NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
+
+    nrfx_timer_enable(&m_timer_touch);
+
+    // Timeout timer oneshot, configured in device_set_timeout()
+    ret = nrfx_timer_init(&m_timer_timeout, &timer_cfg, timer_timeout_handler);
+    if(ret != NRFX_SUCCESS) ERR_MSG("timeout nrfx_timer_init failed: %d\r\n", ret);
+
     //------------- USB -------------//
-#if CFG_TUD_ENABLED
     // Priorities 0, 1, 4 (nRF52) are reserved for SoftDevice
     // 2 is highest for application
     NVIC_SetPriority(USBD_IRQn, 2);
@@ -103,69 +121,53 @@ void board_init(void) {
     // We need to invoke the handler based on the status initially
     uint32_t usb_reg;
 
-#ifdef SOFTDEVICE_PRESENT
-    uint8_t sd_en = false;
-    sd_softdevice_is_enabled(&sd_en);
+    // Power module init
+    const nrfx_power_config_t pwr_cfg = {0};
+    nrfx_power_init(&pwr_cfg);
 
-    if(sd_en) {
-        sd_power_usbdetected_enable(true);
-        sd_power_usbpwrrdy_enable(true);
-        sd_power_usbremoved_enable(true);
+    // Register tusb function as USB power handler
+    // cause cast-function-type warning
+    const nrfx_power_usbevt_config_t pwr_evt_cfg = {.handler = power_event_handler};
+    nrfx_power_usbevt_init(&pwr_evt_cfg);
 
-        sd_power_usbregstatus_get(&usb_reg);
-    } else
-#endif
-    {
-        // Power module init
-        const nrfx_power_config_t pwr_cfg = {0};
-        nrfx_power_init(&pwr_cfg);
+    nrfx_power_usbevt_enable();
 
-        // Register tusb function as USB power handler
-        // cause cast-function-type warning
-        const nrfx_power_usbevt_config_t config = {.handler = power_event_handler};
-        nrfx_power_usbevt_init(&config);
-
-        nrfx_power_usbevt_enable();
-
-        usb_reg = NRF_POWER->USBREGSTATUS;
-    }
+    usb_reg = NRF_POWER->USBREGSTATUS;
 
     if(usb_reg & POWER_USBREGSTATUS_VBUSDETECT_Msk) tusb_hal_nrf_power_event(NRFX_POWER_USB_EVT_DETECTED);
     if(usb_reg & POWER_USBREGSTATUS_OUTPUTRDY_Msk) tusb_hal_nrf_power_event(NRFX_POWER_USB_EVT_READY);
-#endif
+
+    // RNG module init
+    nrfx_rng_config_t rng_cfg = NRFX_RNG_DEFAULT_CONFIG;
+    nrfx_rng_init(&rng_cfg, rng_event_handler);
+
+    rng_count = 0;
+}
+
+// RNG handler
+void rng_event_handler(uint8_t rng_data) {
+    if(rng_count <= 3) {
+        rng_data_word <<= 8;
+        rng_data_word |= rng_data;
+        rng_count++;
+    }
 }
 
 //--------------------------------------------------------------------+
 // Board porting API
 //--------------------------------------------------------------------+
 
-static bool led_state;
 void board_led_write(bool state) {
-    nrf_gpio_pin_write(LED_PIN, state ? LED_STATE_ON : (1 - LED_STATE_ON));
-    led_state = state;
+    nrf_gpio_pin_write(LED_PIN, state ? LED_STATE_ON : 1 - LED_STATE_ON);
 }
 
-void led_on() {
-    board_led_write(true);
+bool board_button_read(void) {
+    return nrf_gpio_pin_read(BUTTON_PIN) == BUTTON_STATE_ACTIVE;
 }
 
-void led_off() {
-    board_led_write(false);
-}
-
-void toggle_led() {
-    board_led_write(!led_state);
-}
-
-uint32_t board_button_read(void) {
-    return BUTTON_STATE_ACTIVE == nrf_gpio_pin_read(BUTTON_PIN);
-}
-
-int board_uart_read(uint8_t *buf, int len) {
-    (void)buf;
-    (void)len;
-    return 0;
-    //  return NRFX_SUCCESS == nrfx_uart_rx(&_uart_id, buf, (size_t) len) ? len : 0;
+volatile uint32_t system_ticks = 0;
+void SysTick_Handler(void) {
+    system_ticks++;
 }
 
 int board_uart_write(void const *buf, int len) {
@@ -173,82 +175,26 @@ int board_uart_write(void const *buf, int len) {
 }
 
 // printf to UART
-int _write(int fd, char * str, int len) {
+int _write(int fd, char *str, int len) {
     board_uart_write(str, len);
     return len;
 }
 
-#if CFG_TUSB_OS == OPT_OS_NONE
-volatile uint32_t system_ticks = 0;
-void SysTick_Handler(void) {
-    system_ticks++;
-}
-
-uint32_t board_millis(void) {
-    return system_ticks;
-}
-#endif
-
-uint32_t device_get_tick() {
-    return board_millis();
-}
-
-void device_set_timeout(void (*callback)(void), uint16_t timeout) {
-    (void) callback;
-}
-
 int device_atomic_compare_and_swap(volatile uint32_t *var, uint32_t expect, uint32_t update) {
-  if (*var == expect) {
-    *var = update;
-    return 0;
-  } else {
-    return -1;
-  }
+    if(*var == expect) {
+        *var = update;
+        return 0;
+    } else {
+        return -1;
+    }
 }
 
 int device_spinlock_lock(volatile uint32_t *lock, uint32_t blocking) {
-  // Not really working, for test only
-  while (*lock) {
-    if (!blocking) return -1;
-  }
-  *lock = 1;
-  return 0;
+    // Not really working, for test only
+    while(*lock) {
+        if(!blocking) return -1;
+    }
+    *lock = 1;
+    return 0;
 }
 void device_spinlock_unlock(volatile uint32_t *lock) { *lock = 0; }
-
-
-#ifdef SOFTDEVICE_PRESENT
-// process SOC event from SD
-uint32_t proc_soc(void) {
-    uint32_t soc_evt;
-    uint32_t err = sd_evt_get(&soc_evt);
-
-    if(NRF_SUCCESS == err) {
-        /*------------- usb power event handler -------------*/
-        int32_t usbevt = (soc_evt == NRF_EVT_POWER_USB_DETECTED) ? NRFX_POWER_USB_EVT_DETECTED : (soc_evt == NRF_EVT_POWER_USB_POWER_READY) ? NRFX_POWER_USB_EVT_READY
-                                                                                             : (soc_evt == NRF_EVT_POWER_USB_REMOVED)       ? NRFX_POWER_USB_EVT_REMOVED
-                                                                                                                                            : -1;
-
-        if(usbevt >= 0) tusb_hal_nrf_power_event(usbevt);
-    }
-
-    return err;
-}
-
-uint32_t proc_ble(void) {
-    // do nothing with ble
-    return NRF_ERROR_NOT_FOUND;
-}
-
-void SD_EVT_IRQHandler(void) {
-    // process BLE and SOC until there is no more events
-    while((NRF_ERROR_NOT_FOUND != proc_ble()) || (NRF_ERROR_NOT_FOUND != proc_soc())) {
-    }
-}
-
-void nrf_error_cb(uint32_t id, uint32_t pc, uint32_t info) {
-    (void)id;
-    (void)pc;
-    (void)info;
-}
-#endif

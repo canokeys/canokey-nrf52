@@ -35,14 +35,14 @@ file(GLOB_RECURSE NRFX_SRCS
     "${THIRD_PARTY_DIR}/nrfx/drivers/src/*.c"
 )
 
+file(GLOB SRCS
+"${BASE_DIR}/src/*.c"
+)
+
 set(SOURCES
     "${THIRD_PARTY_DIR}/nrfx/mdk/gcc_startup_nrf52840.S"
     "${THIRD_PARTY_DIR}/nrfx/mdk/system_nrf52.c"
-
-    "${BASE_DIR}/src/main.c"
-    "${BASE_DIR}/src/board.c"
-    "${BASE_DIR}/src/usb.c"
-    "${BASE_DIR}/src/nfc_dummy.c"
+    "${SRCS}"
 )
 
 add_executable(${TARGET} ${SOURCES} ${NRFX_SRCS})
