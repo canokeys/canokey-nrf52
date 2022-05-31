@@ -5,7 +5,8 @@ GROUP(-lgcc -lc -lnosys)
 
 MEMORY
 {
-  FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 0x100000
+  FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 0xC0000
+  LFS (rx) : ORIGIN = 0x000C0000, LENGTH = 0x40000
   EXTFLASH (rx) : ORIGIN = 0x12000000, LENGTH = 0x8000000
   RAM (rwx) : ORIGIN = 0x20000000, LENGTH = 0x40000
   CODE_RAM (rwx) : ORIGIN = 0x800000, LENGTH = 0x40000
@@ -170,6 +171,10 @@ SECTIONS
     {
         KEEP(*(.stack*))
     } > RAM
+
+    /* Provide lfs begin and end address */
+    _lfs_begin = ORIGIN(LFS);
+    _lfs_end = ORIGIN(LFS) + LENGTH(LFS);
 
     /* Set stack top to end of RAM, and stack limit move down by
      * size of stack_dummy section */
