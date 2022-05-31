@@ -27,15 +27,25 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "board.h"
+#include <board.h>
+#include <device.h>
+#include <globals.h>
+#include <usb_device.h>
 
 /*------------- MAIN -------------*/
 int main(void) {
+    has_touch = 1;
+
     board_init();
+    littlefs_init();
     usb_device_init();
 
+    DBG_MSG("Init applets\n");
+    applets_install();
+    init_apdu_buffer();
+
     while(1) {
-        tud_task();
+        device_loop(has_touch);
     }
 
     return 0;
