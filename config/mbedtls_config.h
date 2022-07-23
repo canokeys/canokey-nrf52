@@ -2910,7 +2910,7 @@
  *
  * Uncomment to enable generic message digest wrappers.
  */
-// #define MBEDTLS_MD_C
+#define MBEDTLS_MD_C
 
 /**
  * \def MBEDTLS_MD2_C

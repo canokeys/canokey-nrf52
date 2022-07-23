@@ -74,8 +74,6 @@ uint32_t random32(void) {
     while(rng_count <= 3);
     nrfx_rng_stop();
 
-    DBG_MSG("random32: %08x\r\n", rng_data_word);
-
     uint32_t data = rng_data_word;
     rng_data_word = 0;
     rng_count = 0;
