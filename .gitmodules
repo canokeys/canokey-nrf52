@@ -1,0 +1,6 @@
+[submodule "canokey-core"]
+	path = canokey-core
+	url = https://github.com/canokeys/canokey-core
+[submodule "third-party/nrfx"]
+	path = third-party/nrfx
+	url = https://github.com/NordicSemiconductor/nrfx

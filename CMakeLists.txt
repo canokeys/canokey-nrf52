@@ -8,6 +8,8 @@ set(TARGET canokey)
 
 set(BASE_DIR ${CMAKE_CURRENT_LIST_DIR}/)
 set(THIRD_PARTY_DIR ${BASE_DIR}/third-party)
+set(NRFX_DIR ${THIRD_PARTY_DIR}/nrfx)
+set(NRF5_SDK_DIR ${THIRD_PARTY_DIR}/nRF5_SDK/nRF5_SDK_17.1.0_ddde560)
 
 set(LINKER_SCRIPT "${BASE_DIR}/nrf52840.ld")
 
@@ -32,16 +34,16 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Source files
 file(GLOB_RECURSE NRFX_SRCS
-    "${THIRD_PARTY_DIR}/nrfx/drivers/src/*.c"
+    "${NRFX_DIR}/drivers/src/*.c"
 )
 
 file(GLOB SRCS
-"${BASE_DIR}/src/*.c"
+    "${BASE_DIR}/src/*.c"
 )
 
 set(SOURCES
-    "${THIRD_PARTY_DIR}/nrfx/mdk/gcc_startup_nrf52840.S"
-    "${THIRD_PARTY_DIR}/nrfx/mdk/system_nrf52.c"
+    "${NRFX_DIR}/mdk/gcc_startup_nrf52840.S"
+    "${NRFX_DIR}/mdk/system_nrf52.c"
     "${SRCS}"
 )
 
@@ -49,19 +51,23 @@ add_executable(${TARGET} ${SOURCES} ${NRFX_SRCS})
 
 # Include dirs
 set(CMSIS_INCLUDE_DIRS
-    "${THIRD_PARTY_DIR}/CMSIS/CMSIS/Core/Include"
+    "${NRF5_SDK_DIR}/components/toolchain/cmsis/include"
 )
 
 set(NRFX_INCLUDE_DIRS
-    "${THIRD_PARTY_DIR}/nrfx"
-    "${THIRD_PARTY_DIR}/nrfx/hal"
-    "${THIRD_PARTY_DIR}/nrfx/mdk"
-    "${THIRD_PARTY_DIR}/nrfx/drivers/include/"
-    "${THIRD_PARTY_DIR}/nrfx/drivers/src/"
+    "${NRFX_DIR}"
+    "${NRFX_DIR}/hal"
+    "${NRFX_DIR}/mdk"
+    "${NRFX_DIR}/drivers/include/"
+    "${NRFX_DIR}/drivers/src/"
+)
+
+set(SDK_INCLUDE_DIRS
 )
 
 target_include_directories(${TARGET} PRIVATE ${CMSIS_INCLUDE_DIRS})
 target_include_directories(${TARGET} PRIVATE ${NRFX_INCLUDE_DIRS})
+target_include_directories(${TARGET} PRIVATE ${SDK_INCLUDE_DIRS})
 target_include_directories(${TARGET} PRIVATE "${BASE_DIR}/include")
 target_include_directories(${TARGET} PRIVATE "${BASE_DIR}/config")
 
