@@ -18,8 +18,14 @@ add_definitions(-DCFG_BOARD=OPT_BOARD_MAKERDIARY_M2_DOCK)
 add_definitions(-DCFG_TUSB_MCU=OPT_MCU_NRF5X)
 add_definitions(-DMBEDTLS_CONFIG_FILE="${BASE_DIR}/config/mbedtls_config.h")
 
+add_definitions(-DCUSTOM_BOARD_INC=board_selection)
+add_definitions(-DBSP_DEFINES_ONLY)
+add_definitions(-DCONFIG_GPIO_AS_PINRESET)
+add_definitions(-DFLOAT_ABI_HARD)
+
 set(CMAKE_C_STANDARD 11)
-set(COMMON_COMPILE_FLAGS "-mcpu=cortex-m4 -mthumb")
+set(COMMON_COMPILE_FLAGS "-mcpu=cortex-m4 -mthumb -mabi=aapcs -mfloat-abi=hard -mfpu=fpv4-sp-d16")
+set(EXTRA_COMPILE_FLAGS "-ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin -fshort-enums")
 
 set(WARNING_FLAGS "-Wall")
 
@@ -32,50 +38,28 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T ${LINKER_SCRIPT}")
 # Enable export of compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Source files
-file(GLOB_RECURSE NRFX_SRCS
-    "${NRFX_DIR}/drivers/src/*.c"
-)
+include(${THIRD_PARTY_DIR}/nRF5_SDK.cmake)
 
 file(GLOB SRCS
     "${BASE_DIR}/src/*.c"
 )
 
 set(SOURCES
-    "${NRFX_DIR}/mdk/gcc_startup_nrf52840.S"
-    "${NRFX_DIR}/mdk/system_nrf52.c"
-    "${SRCS}"
+    ${NRF5_SDK_SOURCES}
+    ${SRCS}
 )
 
-add_executable(${TARGET} ${SOURCES} ${NRFX_SRCS})
+add_executable(${TARGET} ${SOURCES})
 
 # Include dirs
-set(CMSIS_INCLUDE_DIRS
-    "${NRF5_SDK_DIR}/components/toolchain/cmsis/include"
-)
-
-set(NRFX_INCLUDE_DIRS
-    "${NRFX_DIR}"
-    "${NRFX_DIR}/hal"
-    "${NRFX_DIR}/mdk"
-    "${NRFX_DIR}/drivers/include/"
-    "${NRFX_DIR}/drivers/src/"
-)
-
-set(SDK_INCLUDE_DIRS
-)
-
-target_include_directories(${TARGET} PRIVATE ${CMSIS_INCLUDE_DIRS})
-target_include_directories(${TARGET} PRIVATE ${NRFX_INCLUDE_DIRS})
-target_include_directories(${TARGET} PRIVATE ${SDK_INCLUDE_DIRS})
-target_include_directories(${TARGET} PRIVATE "${BASE_DIR}/include")
-target_include_directories(${TARGET} PRIVATE "${BASE_DIR}/config")
+target_include_directories(${TARGET} PRIVATE ${NRF5_SDK_INCLUDES})
+target_include_directories(${TARGET} PRIVATE ${BASE_DIR}/include)
+target_include_directories(${TARGET} PRIVATE ${BASE_DIR}/config)
 
 # TinyUSB DCD configure
 set(DCD_INCLUDE_DIRS
-    ${CMSIS_INCLUDE_DIRS}
-    ${NRFX_INCLUDE_DIRS}
-    "${BASE_DIR}/config"
+    ${NRF5_SDK_INCLUDES}
+    ${BASE_DIR}/config
 )
 
 set(TINYUSB_MCU "OPT_MCU_NRF5X" CACHE STRING "TinyUSB MCU name")

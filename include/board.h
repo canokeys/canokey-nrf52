@@ -43,19 +43,6 @@ extern "C" {
 
 #define CFG_BOARD_UART_BAUDRATE 115200
 
-//--------------------------------------------------------------------+
-// Board selection
-// Select your board in CMakeLists.txt
-//--------------------------------------------------------------------+
-
-#define OPT_BOARD_MAKERDIARY_M2_DOCK    1
-
-#if CFG_BOARD == OPT_BOARD_MAKERDIARY_M2_DOCK
-    #include "boards/makerdiary/m2_dock.h"
-#else
-    #error "No board selected, please select your board in CMakeLists.txt"
-#endif
-
 // Initialize on-board peripherals : led, button, uart and USB
 void board_init(void);
 

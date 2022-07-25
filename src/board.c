@@ -69,11 +69,11 @@ void board_init(void) {
     NRF_CLOCK->TASKS_LFCLKSTART = 1UL;
 
     // LED
-    nrf_gpio_cfg_output(LED_PIN);
+    nrf_gpio_cfg_output(BSP_LED_0);
     board_led_write(false);
 
     // Button
-    nrf_gpio_cfg_input(BUTTON_PIN, BUTTON_PULL);
+    nrf_gpio_cfg_input(BSP_BUTTON_0, BUTTON_PULL);
 
     // 1ms tick timer
     SysTick_Config(SystemCoreClock / 1000);
@@ -81,17 +81,16 @@ void board_init(void) {
     // UART
     nrfx_uarte_config_t uart_cfg =
         {
-            .pseltxd = UART_TX_PIN,
-            .pselrxd = UART_RX_PIN,
-            .pselcts = NRF_UARTE_PSEL_DISCONNECTED,
-            .pselrts = NRF_UARTE_PSEL_DISCONNECTED,
+            .pseltxd = TX_PIN_NUMBER,
+            .pselrxd = RX_PIN_NUMBER,
+            .pselcts = CTS_PIN_NUMBER,
+            .pselrts = RTS_PIN_NUMBER,
             .p_context = NULL,
             .baudrate = NRF_UARTE_BAUDRATE_115200, // CFG_BOARD_UART_BAUDRATE
             .interrupt_priority = 7,
-            .hal_cfg = {
-                .hwfc = NRF_UARTE_HWFC_DISABLED,
-                .parity = NRF_UARTE_PARITY_EXCLUDED,
-            }};
+            .hwfc = HWFC ? NRF_UARTE_HWFC_ENABLED : NRF_UARTE_HWFC_DISABLED,
+            .parity = NRF_UARTE_PARITY_EXCLUDED,
+        };
 
     nrfx_uarte_init(&_uart_id, &uart_cfg, NULL); // uart_handler);
 
@@ -158,11 +157,11 @@ void rng_event_handler(uint8_t rng_data) {
 //--------------------------------------------------------------------+
 
 void board_led_write(bool state) {
-    nrf_gpio_pin_write(LED_PIN, state ? LED_STATE_ON : 1 - LED_STATE_ON);
+    nrf_gpio_pin_write(BSP_LED_0, state ? LEDS_ACTIVE_STATE : 1 - LEDS_ACTIVE_STATE);
 }
 
 bool board_button_read(void) {
-    return nrf_gpio_pin_read(BUTTON_PIN) == BUTTON_STATE_ACTIVE;
+    return nrf_gpio_pin_read(BSP_BUTTON_0) == BUTTONS_ACTIVE_STATE;
 }
 
 volatile uint32_t system_ticks = 0;
