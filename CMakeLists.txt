@@ -6,18 +6,19 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/toolchain.cmake)
 project(canokey-nrf52 C ASM)
 set(TARGET canokey)
 
+set(CANOKEY_BOARD OPT_BOARD_MAKERDIARY_M2_DOCK)
+
 set(BASE_DIR ${CMAKE_CURRENT_LIST_DIR}/)
-set(THIRD_PARTY_DIR ${BASE_DIR}/third-party)
-set(NRFX_DIR ${THIRD_PARTY_DIR}/nrfx)
-set(NRF5_SDK_DIR ${THIRD_PARTY_DIR}/nRF5_SDK/nRF5_SDK_17.1.0_ddde560)
+set(NRF5_SDK_DIR ${BASE_DIR}/nrf_sdk/nRF5_SDK_17.1.0_ddde560)
 
 set(LINKER_SCRIPT "${BASE_DIR}/nrf52840.ld")
 
 add_definitions(-DNRF52840_XXAA)
-add_definitions(-DCFG_BOARD=OPT_BOARD_MAKERDIARY_M2_DOCK)
+add_definitions(-DCFG_BOARD=${CANOKEY_BOARD})
 add_definitions(-DCFG_TUSB_MCU=OPT_MCU_NRF5X)
 add_definitions(-DMBEDTLS_CONFIG_FILE="${BASE_DIR}/config/mbedtls_config.h")
 
+# nrf5 sdk configs
 add_definitions(-DCUSTOM_BOARD_INC=board_selection)
 add_definitions(-DBSP_DEFINES_ONLY)
 add_definitions(-DCONFIG_GPIO_AS_PINRESET)
@@ -38,7 +39,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T ${LINKER_SCRIPT}")
 # Enable export of compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include(${THIRD_PARTY_DIR}/nRF5_SDK.cmake)
+include(${BASE_DIR}/nrf_sdk/nRF5_SDK.cmake)
 
 file(GLOB SRCS
     "${BASE_DIR}/src/*.c"
