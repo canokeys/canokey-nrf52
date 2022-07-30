@@ -45,8 +45,8 @@ int block_prog(const struct lfs_config *c, lfs_block_t block,
 
     // Program 32 bit words
     uint32_t *src = (uint32_t *)buffer;
-    uint32_t *dst = (uint32_t *)FLASH_ADDR(block, off);
-    memcpy(dst, src, size);
+    uint32_t dst = (uint32_t)FLASH_ADDR(block, off);
+    nrf_nvmc_write_words(dst, src, size / 4);
 
     nrf_nvmc_mode_set(NRF_NVMC, NRF_NVMC_MODE_READONLY);
 
@@ -55,7 +55,7 @@ int block_prog(const struct lfs_config *c, lfs_block_t block,
 
 int block_erase(const struct lfs_config *c, lfs_block_t block) {
     (void)c;
-    DBG_MSG("blk %d\r\n", block);
+    DBG_MSG("blk %d, addr 0x%08x\r\n", block, (uint32_t)FLASH_ADDR(block, 0));
 
     nrfx_err_t err = nrfx_nvmc_page_erase((uint32_t)FLASH_ADDR(block, 0));
     if(err != NRFX_SUCCESS) {

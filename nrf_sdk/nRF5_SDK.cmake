@@ -41,6 +41,8 @@ set(NRF5_SDK_DRIVER_SOURCES
     ${NRF5_SDK_DIR}/integration/nrfx/legacy/nrf_drv_clock.c
     ${NRF5_SDK_DIR}/integration/nrfx/legacy/nrf_drv_uart.c
 
+    ${NRF5_SDK_DIR}/modules/nrfx/hal/nrf_nvmc.c
+
     ${NRF5_SDK_DIR}/modules/nrfx/drivers/src/nrfx_clock.c
     ${NRF5_SDK_DIR}/modules/nrfx/drivers/src/nrfx_nfct.c
     ${NRF5_SDK_DIR}/modules/nrfx/drivers/src/nrfx_power.c
