@@ -38,7 +38,6 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "tusb.h"
 #include "nrfx_timer.h"
 
 #define CFG_BOARD_UART_BAUDRATE 115200
