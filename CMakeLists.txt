@@ -26,15 +26,15 @@ add_definitions(-DFLOAT_ABI_HARD)
 
 set(CMAKE_C_STANDARD 11)
 set(COMMON_COMPILE_FLAGS "-mcpu=cortex-m4 -mthumb -mabi=aapcs -mfloat-abi=hard -mfpu=fpv4-sp-d16")
-set(EXTRA_COMPILE_FLAGS "-ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin -fshort-enums")
+set(EXTRA_COMPILE_FLAGS "-ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin -fshort-enums -g3 -O0")
 
 set(WARNING_FLAGS "-Wall")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_COMPILE_FLAGS} ${WARNING_FLAGS} ${DEFINITIONS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_COMPILE_FLAGS} ${WARNING_FLAGS} ${DEFINITIONS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_COMPILE_FLAGS} ${WARNING_FLAGS} ${EXTRA_COMPILE_FLAGS} ${DEFINITIONS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_COMPILE_FLAGS} ${WARNING_FLAGS} ${EXTRA_COMPILE_FLAGS} ${DEFINITIONS}")
 set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${COMMON_COMPILE_FLAGS}")
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T ${LINKER_SCRIPT}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${NRF5_SDK_DIR}/modules/nrfx/mdk -T ${LINKER_SCRIPT} -Wl,--gc-sections -Wl,-Map=${TARGET}.map --specs=nano.specs")
 
 # Enable export of compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -56,6 +56,9 @@ add_executable(${TARGET} ${SOURCES})
 target_include_directories(${TARGET} PRIVATE ${NRF5_SDK_INCLUDES})
 target_include_directories(${TARGET} PRIVATE ${BASE_DIR}/include)
 target_include_directories(${TARGET} PRIVATE ${BASE_DIR}/config)
+
+# nrf sdk binary libraries
+target_link_libraries(${TARGET} PRIVATE ${NRF5_SDK_LIBRARIES})
 
 # TinyUSB DCD configure
 set(DCD_INCLUDE_DIRS
@@ -100,6 +103,14 @@ add_custom_target(${TARGET}.hex
 add_custom_command(TARGET ${TARGET} POST_BUILD
     COMMAND ${CROSS_COMPILE}size ${TARGET}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+# NRF sdk config tool
+set(NRF5_SDK_CONFIG_FILE ${BASE_DIR}/config/sdk_config.h)
+set(CMSIS_CONFIG_TOOL ${NRF5_SDK_DIR}/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar)
+
+add_custom_target(sdk_config
+    COMMAND java -jar ${CMSIS_CONFIG_TOOL} ${NRF5_SDK_CONFIG_FILE}
 )
 
 # auto-ignore build directory
