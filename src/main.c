@@ -32,11 +32,27 @@
 #include <globals.h>
 #include <usb_device.h>
 
+#include "nrf_log.h"
+#include "nrf_log_ctrl.h"
+#include "nrf_log_default_backends.h"
+
+/**
+ *@brief Function for initializing logging.
+ */
+static void log_init(void) {
+    ret_code_t err_code = NRF_LOG_INIT(NULL);
+    APP_ERROR_CHECK(err_code);
+
+    NRF_LOG_DEFAULT_BACKENDS_INIT();
+}
+
 /*------------- MAIN -------------*/
 int main(void) {
     has_touch = 1;
 
     board_init();
+    log_init();
+
     littlefs_init();
     usb_device_init();
 
@@ -45,6 +61,7 @@ int main(void) {
     init_apdu_buffer();
 
     while(1) {
+        NRF_LOG_FLUSH();
         device_loop(has_touch);
     }
 

@@ -4749,7 +4749,7 @@
 // <e> NRF_CLOCK_ENABLED - nrf_drv_clock - CLOCK peripheral driver - legacy layer
 //==========================================================
 #ifndef NRF_CLOCK_ENABLED
-#define NRF_CLOCK_ENABLED 0
+#define NRF_CLOCK_ENABLED 1
 #endif
 // <o> CLOCK_CONFIG_LF_SRC  - LF Clock Source
  
@@ -7567,10 +7567,89 @@
 // <h> nRF_Log 
 
 //==========================================================
+// <e> NRF_LOG_BACKEND_RTT_ENABLED - nrf_log_backend_rtt - Log RTT backend
+//==========================================================
+#ifndef NRF_LOG_BACKEND_RTT_ENABLED
+#define NRF_LOG_BACKEND_RTT_ENABLED 0
+#endif
+// <o> NRF_LOG_BACKEND_RTT_TEMP_BUFFER_SIZE - Size of buffer for partially processed strings. 
+// <i> Size of the buffer is a trade-off between RAM usage and processing.
+// <i> if buffer is smaller then strings will often be fragmented.
+// <i> It is recommended to use size which will fit typical log and only the
+// <i> longer one will be fragmented.
+
+#ifndef NRF_LOG_BACKEND_RTT_TEMP_BUFFER_SIZE
+#define NRF_LOG_BACKEND_RTT_TEMP_BUFFER_SIZE 64
+#endif
+
+// <o> NRF_LOG_BACKEND_RTT_TX_RETRY_DELAY_MS - Period before retrying writing to RTT 
+#ifndef NRF_LOG_BACKEND_RTT_TX_RETRY_DELAY_MS
+#define NRF_LOG_BACKEND_RTT_TX_RETRY_DELAY_MS 1
+#endif
+
+// <o> NRF_LOG_BACKEND_RTT_TX_RETRY_CNT - Writing to RTT retries. 
+// <i> If RTT fails to accept any new data after retries
+// <i> module assumes that host is not active and on next
+// <i> request it will perform only one write attempt.
+// <i> On successful writing, module assumes that host is active
+// <i> and scheme with retry is applied again.
+
+#ifndef NRF_LOG_BACKEND_RTT_TX_RETRY_CNT
+#define NRF_LOG_BACKEND_RTT_TX_RETRY_CNT 3
+#endif
+
+// </e>
+
+// <e> NRF_LOG_BACKEND_UART_ENABLED - nrf_log_backend_uart - Log UART backend
+//==========================================================
+#ifndef NRF_LOG_BACKEND_UART_ENABLED
+#define NRF_LOG_BACKEND_UART_ENABLED 0
+#endif
+// <o> NRF_LOG_BACKEND_UART_TX_PIN - UART TX pin 
+#ifndef NRF_LOG_BACKEND_UART_TX_PIN
+#define NRF_LOG_BACKEND_UART_TX_PIN 16
+#endif
+
+// <o> NRF_LOG_BACKEND_UART_BAUDRATE  - Default Baudrate
+ 
+// <323584=> 1200 baud 
+// <643072=> 2400 baud 
+// <1290240=> 4800 baud 
+// <2576384=> 9600 baud 
+// <3862528=> 14400 baud 
+// <5152768=> 19200 baud 
+// <7716864=> 28800 baud 
+// <10289152=> 38400 baud 
+// <15400960=> 57600 baud 
+// <20615168=> 76800 baud 
+// <30801920=> 115200 baud 
+// <61865984=> 230400 baud 
+// <67108864=> 250000 baud 
+// <121634816=> 460800 baud 
+// <251658240=> 921600 baud 
+// <268435456=> 1000000 baud 
+
+#ifndef NRF_LOG_BACKEND_UART_BAUDRATE
+#define NRF_LOG_BACKEND_UART_BAUDRATE 30801920
+#endif
+
+// <o> NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE - Size of buffer for partially processed strings. 
+// <i> Size of the buffer is a trade-off between RAM usage and processing.
+// <i> if buffer is smaller then strings will often be fragmented.
+// <i> It is recommended to use size which will fit typical log and only the
+// <i> longer one will be fragmented.
+
+#ifndef NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE
+#define NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE 64
+#endif
+
+// </e>
+
+//==========================================================
 // <e> NRF_LOG_ENABLED - nrf_log - Logger
 //==========================================================
 #ifndef NRF_LOG_ENABLED
-#define NRF_LOG_ENABLED 0
+#define NRF_LOG_ENABLED 1
 #endif
 // <h> Log message pool - Configuration of log message pool
 
@@ -7642,7 +7721,7 @@
 // <4=> Debug 
 
 #ifndef NRF_LOG_DEFAULT_LEVEL
-#define NRF_LOG_DEFAULT_LEVEL 3
+#define NRF_LOG_DEFAULT_LEVEL 4
 #endif
 
 // <q> NRF_LOG_DEFERRED  - Enable deffered logger.
@@ -7651,7 +7730,7 @@
 // <i> Log data is buffered and can be processed in idle.
 
 #ifndef NRF_LOG_DEFERRED
-#define NRF_LOG_DEFERRED 1
+#define NRF_LOG_DEFERRED 0
 #endif
 
 // <q> NRF_LOG_FILTERS_ENABLED  - Enable dynamic filtering of logs.
@@ -10761,7 +10840,7 @@
 // <e> NFC_NDEF_MSG_ENABLED - nfc_ndef_msg - NFC NDEF Message generator module
 //==========================================================
 #ifndef NFC_NDEF_MSG_ENABLED
-#define NFC_NDEF_MSG_ENABLED 0
+#define NFC_NDEF_MSG_ENABLED 1
 #endif
 // <o> NFC_NDEF_MSG_TAG_TYPE  - NFC Tag Type
  
@@ -10820,7 +10899,7 @@
  
 
 #ifndef NFC_NDEF_RECORD_ENABLED
-#define NFC_NDEF_RECORD_ENABLED 0
+#define NFC_NDEF_RECORD_ENABLED 1
 #endif
 
 // <e> NFC_NDEF_RECORD_PARSER_ENABLED - nfc_ndef_record_parser - NFC NDEF Record parser module
@@ -10869,7 +10948,7 @@
  
 
 #ifndef NFC_NDEF_TEXT_RECORD_ENABLED
-#define NFC_NDEF_TEXT_RECORD_ENABLED 0
+#define NFC_NDEF_TEXT_RECORD_ENABLED 1
 #endif
 
 // <q> NFC_NDEF_URI_MSG_ENABLED  - nfc_uri_msg - Encoding data for NDEF message with URI record for NFC Tag
@@ -10889,12 +10968,12 @@
 // <e> NFC_PLATFORM_ENABLED - nfc_platform - NFC platform module for Clock control.
 //==========================================================
 #ifndef NFC_PLATFORM_ENABLED
-#define NFC_PLATFORM_ENABLED 0
+#define NFC_PLATFORM_ENABLED 1
 #endif
 // <e> NFC_PLATFORM_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NFC_PLATFORM_LOG_ENABLED
-#define NFC_PLATFORM_LOG_ENABLED 0
+#define NFC_PLATFORM_LOG_ENABLED 1
 #endif
 // <o> NFC_PLATFORM_LOG_LEVEL  - Default Severity level
  
@@ -11783,6 +11862,53 @@
 
 
 // </e>
+
+// <h> nRF_Segger_RTT 
+
+//==========================================================
+// <h> segger_rtt - SEGGER RTT
+
+//==========================================================
+// <o> SEGGER_RTT_CONFIG_BUFFER_SIZE_UP - Size of upstream buffer. 
+// <i> Note that either @ref NRF_LOG_BACKEND_RTT_OUTPUT_BUFFER_SIZE
+// <i> or this value is actually used. It depends on which one is bigger.
+
+#ifndef SEGGER_RTT_CONFIG_BUFFER_SIZE_UP
+#define SEGGER_RTT_CONFIG_BUFFER_SIZE_UP 512
+#endif
+
+// <o> SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS - Maximum number of upstream buffers. 
+#ifndef SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS
+#define SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS 2
+#endif
+
+// <o> SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN - Size of downstream buffer. 
+#ifndef SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN
+#define SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN 16
+#endif
+
+// <o> SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS - Maximum number of downstream buffers. 
+#ifndef SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS
+#define SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS 2
+#endif
+
+// <o> SEGGER_RTT_CONFIG_DEFAULT_MODE  - RTT behavior if the buffer is full.
+ 
+
+// <i> The following modes are supported:
+// <i> - SKIP  - Do not block, output nothing.
+// <i> - TRIM  - Do not block, output as much as fits.
+// <i> - BLOCK - Wait until there is space in the buffer.
+// <0=> SKIP 
+// <1=> TRIM 
+// <2=> BLOCK_IF_FIFO_FULL 
+
+#ifndef SEGGER_RTT_CONFIG_DEFAULT_MODE
+#define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
+#endif
+
+// </h> 
+//==========================================================
 
 // </h> 
 //==========================================================
