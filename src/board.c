@@ -27,12 +27,17 @@
 #include <board.h>
 #include <common.h>
 
+#include "tusb.h"
+
+#include "boards.h"
+#include "nrf_clock.h"
 #include "nrf_gpio.h"
+
 #include "nrfx.h"
 #include "nrfx_power.h"
+#include "nrfx_rng.h"
 #include "nrfx_timer.h"
 #include "nrfx_uarte.h"
-#include "nrfx_rng.h"
 
 uint32_t rng_count = 0;
 uint32_t rng_data_word = 0;
@@ -56,7 +61,7 @@ nrfx_timer_t m_timer_timeout = NRFX_TIMER_INSTANCE(1);
 extern void tusb_hal_nrf_power_event(uint32_t event);
 
 // nrf power callback, could be unused if SD is enabled or usb is disabled (board_test example)
-TU_ATTR_UNUSED static void power_event_handler(nrfx_power_usb_evt_t event) {
+static void power_event_handler(nrfx_power_usb_evt_t event) {
     tusb_hal_nrf_power_event((uint32_t)event);
 }
 
@@ -68,17 +73,17 @@ void board_init(void) {
     NRF_CLOCK->LFCLKSRC = CLOCK_LFCLKSRC_SRC_RC;
     NRF_CLOCK->TASKS_LFCLKSTART = 1UL;
 
-    // LED
-    nrf_gpio_cfg_output(BSP_LED_0);
-    board_led_write(false);
+    // Clock init
+    nrf_drv_clock_init();
 
-    // Button
-    nrf_gpio_cfg_input(BSP_BUTTON_0, BUTTON_PULL);
+    // LED & buttons
+    bsp_board_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS);
 
     // 1ms tick timer
     SysTick_Config(SystemCoreClock / 1000);
 
-    // UART
+// UART
+#if defined(TX_PIN_NUMBER)
     nrfx_uarte_config_t uart_cfg =
         {
             .pseltxd = TX_PIN_NUMBER,
@@ -92,7 +97,8 @@ void board_init(void) {
             .parity = NRF_UARTE_PARITY_EXCLUDED,
         };
 
-    nrfx_uarte_init(&_uart_id, &uart_cfg, NULL); // uart_handler);
+    nrfx_uarte_init(&_uart_id, &uart_cfg, NULL);
+#endif
 
     // Timer
     nrfx_timer_config_t timer_cfg = NRFX_TIMER_DEFAULT_CONFIG;
@@ -157,11 +163,14 @@ void rng_event_handler(uint8_t rng_data) {
 //--------------------------------------------------------------------+
 
 void board_led_write(bool state) {
-    nrf_gpio_pin_write(BSP_LED_0, state ? LEDS_ACTIVE_STATE : 1 - LEDS_ACTIVE_STATE);
+    if(state)
+        bsp_board_led_on(BSP_LED_0);
+    else
+        bsp_board_led_off(BSP_LED_0);
 }
 
 bool board_button_read(void) {
-    return nrf_gpio_pin_read(BSP_BUTTON_0) == BUTTONS_ACTIVE_STATE;
+    return bsp_board_button_state_get(BSP_BUTTON_0);
 }
 
 volatile uint32_t system_ticks = 0;
@@ -170,7 +179,11 @@ void SysTick_Handler(void) {
 }
 
 int board_uart_write(void const *buf, int len) {
+#if defined(TX_PIN_NUMBER)
     return (NRFX_SUCCESS == nrfx_uarte_tx(&_uart_id, (uint8_t const *)buf, (size_t)len)) ? len : 0;
+#else
+    return 0;
+#endif
 }
 
 // printf to UART
