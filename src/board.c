@@ -162,17 +162,6 @@ void rng_event_handler(uint8_t rng_data) {
 // Board porting API
 //--------------------------------------------------------------------+
 
-void board_led_write(bool state) {
-    if(state)
-        bsp_board_led_on(BSP_LED_0);
-    else
-        bsp_board_led_off(BSP_LED_0);
-}
-
-bool board_button_read(void) {
-    return bsp_board_button_state_get(BSP_BUTTON_0);
-}
-
 volatile uint32_t system_ticks = 0;
 void SysTick_Handler(void) {
     system_ticks++;

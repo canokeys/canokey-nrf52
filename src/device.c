@@ -9,6 +9,8 @@
 #include <nrfx_uarte.h>
 #include <nrfx_rng.h>
 
+#include <boards.h>
+
 uint32_t device_get_tick() {
     return system_ticks;
 }
@@ -22,11 +24,11 @@ void device_delay(int ms) {
 }
 
 void led_on() {
-    board_led_write(true);
+    bsp_board_led_on(BSP_BOARD_LED_0);
 }
 
 void led_off() {
-    board_led_write(false);
+    bsp_board_led_off(BSP_BOARD_LED_0);
 }
 
 static void (*tim_callback)(void);
@@ -36,7 +38,7 @@ void timer_touch_handler(nrf_timer_event_t event_type, void *p_context) {
     static uint32_t touch_timeout = 1;
     device_update_led();
     if(has_touch) {
-        if(board_button_read()) {
+        if(bsp_board_button_state_get(BSP_BOARD_BUTTON_0)) {
             uint32_t tick = device_get_tick();
             if(tick < touch_timeout + 1000) {
             } else {

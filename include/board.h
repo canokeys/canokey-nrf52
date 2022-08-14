@@ -45,12 +45,6 @@ extern "C" {
 // Initialize on-board peripherals : led, button, uart and USB
 void board_init(void);
 
-// Turn LED on or off
-void board_led_write(bool state);
-
-// Read button state
-bool board_button_read(void);
-
 // Write data to UART
 int board_uart_write(void const *buf, int len);
 
