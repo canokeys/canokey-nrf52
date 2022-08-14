@@ -105,6 +105,17 @@ add_custom_command(TARGET ${TARGET} POST_BUILD
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+# Generate DFU package
+add_custom_target(${TARGET}_dfu.zip
+    DEPENDS ${TARGET}.hex
+    COMMAND nrfutil pkg generate --hw-version 52 --sd-req 0 --application-version 1 --application ${TARGET}.hex ${TARGET}_dfu.zip
+)
+
+add_custom_target(dfu
+    DEPENDS ${TARGET}_dfu.zip
+    COMMAND nrfutil dfu usb-serial -pkg ${TARGET}_dfu.zip -p /dev/ttyACM0 -b 115200
+)
+
 # NRF sdk config tool
 set(NRF5_SDK_CONFIG_FILE ${BASE_DIR}/config/sdk_config.h)
 set(CMSIS_CONFIG_TOOL ${NRF5_SDK_DIR}/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar)
