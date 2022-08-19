@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.18)
 
 message(STATUS "NRF5_SDK_DIR: ${NRF5_SDK_DIR}")
 
+if(NOT EXISTS ${NRF5_SDK_DIR}/license.txt)
+    message("Please download the 17.1.0 version SDK from https://www.nordicsemi.com/Products/Development-software/nRF5-SDK/Download#infotabs")
+    message("  and extract it to ${NRF5_SDK_DIR}.")
+
+    message(FATAL_ERROR "NRF5 SDK not found")
+endif()
+
 set(NRF5_SDK_STARTUP_SOURCES
     ${NRF5_SDK_DIR}/modules/nrfx/mdk/gcc_startup_nrf52840.S
     ${NRF5_SDK_DIR}/modules/nrfx/mdk/system_nrf52840.c
@@ -61,6 +68,10 @@ set(NRF5_SDK_OTHER_SOURCES
     ${NRF5_SDK_DIR}/components/nfc/ndef/generic/message/nfc_ndef_msg.c
     ${NRF5_SDK_DIR}/components/nfc/ndef/generic/record/nfc_ndef_record.c
     ${NRF5_SDK_DIR}/components/nfc/ndef/text/nfc_text_rec.c
+
+    ${NRF5_SDK_DIR}/external/segger_rtt/SEGGER_RTT.c
+    ${NRF5_SDK_DIR}/external/segger_rtt/SEGGER_RTT_Syscalls_GCC.c
+    ${NRF5_SDK_DIR}/external/segger_rtt/SEGGER_RTT_printf.c
 )
 
 set(NRF5_SDK_SOURCES
@@ -106,9 +117,15 @@ set(NRF5_SDK_INCLUDES
     ${NRF5_SDK_DIR}/components/nfc/platform
     ${NRF5_SDK_DIR}/components/nfc/t2t_lib
     ${NRF5_SDK_DIR}/components/toolchain/cmsis/include
+    
+    ${NRF5_SDK_DIR}/components/softdevice/mbr/headers
 
     ${NRF5_SDK_DIR}/external/fprintf
     ${NRF5_SDK_DIR}/external/segger_rtt
 
     ${NRF5_SDK_NRFX_INCLUDES}
+)
+
+set(NRF5_SDK_LIBRARIES
+    ${NRF5_SDK_DIR}/components/nfc/t2t_lib/nfc_t2t_lib_gcc.a
 )
