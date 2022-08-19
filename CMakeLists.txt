@@ -6,7 +6,9 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/toolchain.cmake)
 project(canokey-nrf52 C ASM)
 set(TARGET canokey)
 
-set(CANOKEY_BOARD OPT_BOARD_MAKERDIARY_M2_DOCK)
+# board selection, see config/board_selection.h for avaliable boards
+set(CANOKEY_BOARD OPT_BOARD_NRF52840_DONGLE)
+# set(CANOKEY_BOARD OPT_BOARD_MAKERDIARY_M2_DOCK)
 
 set(BASE_DIR ${CMAKE_CURRENT_LIST_DIR}/)
 set(NRF5_SDK_DIR ${BASE_DIR}/nrf_sdk/nRF5_SDK_17.1.0_ddde560)
