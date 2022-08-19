@@ -1,3 +1,9 @@
 [submodule "canokey-core"]
 	path = canokey-core
 	url = https://github.com/canokeys/canokey-core
+[submodule "bootloader"]
+	path = bootloader
+	url = https://github.com/adafruit/Adafruit_nRF52_Bootloader
+[submodule "utils/uf2"]
+	path = utils/uf2
+	url = https://github.com/microsoft/uf2

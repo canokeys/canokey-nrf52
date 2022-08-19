@@ -5,11 +5,10 @@ GROUP(-lgcc -lc -lnosys)
 
 MEMORY
 {
-  FLASH (rx) : ORIGIN = 0x00000000, LENGTH = 0xC0000
-  LFS (rx) : ORIGIN = 0x000C0000, LENGTH = 0x40000
-  EXTFLASH (rx) : ORIGIN = 0x12000000, LENGTH = 0x8000000
-  RAM (rwx) : ORIGIN = 0x20000000, LENGTH = 0x40000
-  CODE_RAM (rwx) : ORIGIN = 0x800000, LENGTH = 0x40000
+  /* Bootloader will occupy 0xF4000 - 0x100000 */
+  FLASH (rx) : ORIGIN = 0x00001000, LENGTH = 0x9f000  /* 636 KB */
+  LFS (rw)   : ORIGIN = 0x000b0000, LENGTH = 0x40000  /* 256 KB littlefs */
+  RAM (rwx)  : ORIGIN = 0x20000008, LENGTH = 0x3fff8
 }
 
 SECTIONS

@@ -14,6 +14,7 @@ set(NRF5_SDK_DIR ${BASE_DIR}/nrf_sdk/nRF5_SDK_17.1.0_ddde560)
 set(LINKER_SCRIPT "${BASE_DIR}/nrf52840.ld")
 
 add_definitions(-DNRF52840_XXAA)
+add_definitions(-DMBR_PRESENT)
 add_definitions(-DCFG_BOARD=${CANOKEY_BOARD})
 add_definitions(-DCFG_TUSB_MCU=OPT_MCU_NRF5X)
 add_definitions(-DMBEDTLS_CONFIG_FILE="${BASE_DIR}/config/mbedtls_config.h")
@@ -105,15 +106,10 @@ add_custom_command(TARGET ${TARGET} POST_BUILD
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-# Generate DFU package
-add_custom_target(${TARGET}_dfu.zip
+# Generate UF2 package for Adafruit bootloader
+add_custom_target(${TARGET}_flash.uf2
     DEPENDS ${TARGET}.hex
-    COMMAND nrfutil pkg generate --hw-version 52 --sd-req 0 --application-version 1 --application ${TARGET}.hex ${TARGET}_dfu.zip
-)
-
-add_custom_target(dfu
-    DEPENDS ${TARGET}_dfu.zip
-    COMMAND nrfutil dfu usb-serial -pkg ${TARGET}_dfu.zip -p /dev/ttyACM0 -b 115200
+    COMMAND python ${BASE_DIR}/utils/uf2/utils/uf2conv.py --convert --family 0xADA52840 -o ${TARGET}_flash.uf2 ${TARGET}.hex
 )
 
 # NRF sdk config tool
