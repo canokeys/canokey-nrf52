@@ -1,3 +1,5 @@
+#include <admin.h>
+
 #include <string.h>
 #include <usb_device.h>
 

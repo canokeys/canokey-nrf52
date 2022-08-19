@@ -27,9 +27,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <apdu.h>
+#include <applets.h>
 #include <board.h>
 #include <device.h>
 #include <globals.h>
+#include <lfs_init.h>
 #include <usb_device.h>
 
 #include "nrf_log.h"

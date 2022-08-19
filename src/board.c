@@ -31,6 +31,7 @@
 
 #include "boards.h"
 #include "nrf_clock.h"
+#include "nrf_drv_clock.h"
 #include "nrf_gpio.h"
 
 #include "nrfx.h"
@@ -52,7 +53,6 @@ void USBD_IRQHandler(void) {
 /*------------------------------------------------------------------*/
 /* MACRO TYPEDEF CONSTANT ENUM
  *------------------------------------------------------------------*/
-static nrfx_uarte_t _uart_id = NRFX_UARTE_INSTANCE(0);
 nrfx_timer_t m_timer_touch = NRFX_TIMER_INSTANCE(0);
 nrfx_timer_t m_timer_timeout = NRFX_TIMER_INSTANCE(1);
 
@@ -84,6 +84,8 @@ void board_init(void) {
 
 // UART
 #if defined(TX_PIN_NUMBER)
+    static nrfx_uarte_t _uart_id = NRFX_UARTE_INSTANCE(0);
+
     nrfx_uarte_config_t uart_cfg =
         {
             .pseltxd = TX_PIN_NUMBER,

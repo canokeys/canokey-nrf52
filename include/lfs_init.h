@@ -3,4 +3,4 @@
 
 void littlefs_init(void);
 
-#endif /* 
+#endif /* _LFS_INIT_H_ */
