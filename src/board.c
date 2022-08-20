@@ -40,6 +40,8 @@
 #include "nrfx_timer.h"
 #include "nrfx_uarte.h"
 
+#include "nrf_svc_function.h"
+
 uint32_t rng_count = 0;
 uint32_t rng_data_word = 0;
 
@@ -55,6 +57,7 @@ void USBD_IRQHandler(void) {
  *------------------------------------------------------------------*/
 nrfx_timer_t m_timer_touch = NRFX_TIMER_INSTANCE(0);
 nrfx_timer_t m_timer_timeout = NRFX_TIMER_INSTANCE(1);
+nrfx_uarte_t m_uart_id = NRFX_UARTE_INSTANCE(0);
 
 // tinyusb function that handles power event (detected, ready, removed)
 // We must call it within SD's SOC event handler, or set it as power event handler if SD is not enabled.
@@ -84,8 +87,6 @@ void board_init(void) {
 
 // UART
 #if defined(TX_PIN_NUMBER)
-    static nrfx_uarte_t _uart_id = NRFX_UARTE_INSTANCE(0);
-
     nrfx_uarte_config_t uart_cfg =
         {
             .pseltxd = TX_PIN_NUMBER,
@@ -99,7 +100,7 @@ void board_init(void) {
             .parity = NRF_UARTE_PARITY_EXCLUDED,
         };
 
-    nrfx_uarte_init(&_uart_id, &uart_cfg, NULL);
+    nrfx_uarte_init(&m_uart_id, &uart_cfg, NULL);
 #endif
 
     // Timer
@@ -171,7 +172,7 @@ void SysTick_Handler(void) {
 
 int board_uart_write(void const *buf, int len) {
 #if defined(TX_PIN_NUMBER)
-    return (NRFX_SUCCESS == nrfx_uarte_tx(&_uart_id, (uint8_t const *)buf, (size_t)len)) ? len : 0;
+    return (NRFX_SUCCESS == nrfx_uarte_tx(&m_uart_id, (uint8_t const *)buf, (size_t)len)) ? len : 0;
 #else
     return 0;
 #endif
@@ -183,21 +184,43 @@ int _write(int fd, char *str, int len) {
     return len;
 }
 
-int device_atomic_compare_and_swap(volatile uint32_t *var, uint32_t expect, uint32_t update) {
-    if(*var == expect) {
-        *var = update;
-        return 0;
-    } else {
-        return -1;
+uint32_t svc_store_conditionally_func(uint32_t lock_addr, uint32_t expect, uint32_t update) {
+    uint32_t ret;
+
+    uint32_t *var = (uint32_t *)lock_addr;
+    if(*var != (uint32_t)expect)
+        ret = 0xFFFFFFFF; // failed to store
+    else {
+        *var = (uint32_t)update;
+        ret = 0;
+        __DMB();
     }
+
+    return ret;
+}
+
+NRF_SVC_FUNCTION_REGISTER(1, store_conditionally, (nrf_svc_func_t)&svc_store_conditionally_func);
+
+__attribute__((always_inline)) inline unsigned svc_store_conditionally(uint32_t lock_addr, uint32_t expect, uint32_t update) {
+    register unsigned r0 asm("r0") = lock_addr;
+    register unsigned r1 asm("r1") = expect;
+    register unsigned r2 asm("r2") = update;
+    __asm volatile("SVC #1"
+                   : "=r"(r0)
+                   : "r"(r0), "r"(r1), "r"(r2));
+    return r0; // value returned from SVC
+}
+
+int device_atomic_compare_and_swap(volatile uint32_t *var, uint32_t expect, uint32_t update) {
+    return svc_store_conditionally((uint32_t)var, expect, update);
 }
 
 int device_spinlock_lock(volatile uint32_t *lock, uint32_t blocking) {
-    // Not really working, for test only
-    while(*lock) {
+    while(svc_store_conditionally((uint32_t)lock, 0, 1) != 0)
         if(!blocking) return -1;
-    }
-    *lock = 1;
     return 0;
 }
-void device_spinlock_unlock(volatile uint32_t *lock) { *lock = 0; }
+void device_spinlock_unlock(volatile uint32_t *lock) {
+    __DMB();   // Ensure memory operations completed before
+    *lock = 0; // releasing lock
+}

@@ -4,7 +4,7 @@ message(STATUS "NRF5_SDK_DIR: ${NRF5_SDK_DIR}")
 
 if(NOT EXISTS ${NRF5_SDK_DIR}/license.txt)
     message("Please download the 17.1.0 version SDK from https://www.nordicsemi.com/Products/Development-software/nRF5-SDK/Download#infotabs")
-    message("  and extract it to ${NRF5_SDK_DIR}.")
+    message("  and extract it to ${NRF5_SDK_DIR}")
 
     message(FATAL_ERROR "NRF5 SDK not found")
 endif()
@@ -29,6 +29,7 @@ set(NRF5_SDK_LIBRARY_SOURCES
     ${NRF5_SDK_DIR}/components/libraries/memobj/nrf_memobj.c
     ${NRF5_SDK_DIR}/components/libraries/ringbuf/nrf_ringbuf.c
     ${NRF5_SDK_DIR}/components/libraries/strerror/nrf_strerror.c
+    ${NRF5_SDK_DIR}/components/libraries/svc/nrf_svc_handler.c
     ${NRF5_SDK_DIR}/components/libraries/uart/app_uart_fifo.c
     ${NRF5_SDK_DIR}/components/libraries/util/app_error_handler_gcc.c
     ${NRF5_SDK_DIR}/components/libraries/util/app_error_weak.c
@@ -109,6 +110,7 @@ set(NRF5_SDK_INCLUDES
     ${NRF5_SDK_DIR}/components/libraries/memobj
     ${NRF5_SDK_DIR}/components/libraries/ringbuf
     ${NRF5_SDK_DIR}/components/libraries/strerror
+    ${NRF5_SDK_DIR}/components/libraries/svc
     ${NRF5_SDK_DIR}/components/libraries/uart
     ${NRF5_SDK_DIR}/components/libraries/util
     ${NRF5_SDK_DIR}/components/nfc/ndef/generic/message
