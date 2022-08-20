@@ -60,7 +60,7 @@ void timer_touch_handler(nrf_timer_event_t event_type, void * p_context);
 void timer_timeout_handler(nrf_timer_event_t event_type, void * p_context);
 
 // RNG event handler
-extern uint32_t rng_data_word, rng_count;
+extern volatile uint32_t rng_data_word, rng_count;
 void rng_event_handler(uint8_t rng_data);
 
 #ifdef __cplusplus

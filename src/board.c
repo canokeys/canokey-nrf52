@@ -42,8 +42,8 @@
 
 #include "nrf_svc_function.h"
 
-uint32_t rng_count = 0;
-uint32_t rng_data_word = 0;
+volatile uint32_t rng_count = 0;
+volatile uint32_t rng_data_word = 0;
 
 //--------------------------------------------------------------------+
 // Forward USB interrupt events to TinyUSB IRQ Handler

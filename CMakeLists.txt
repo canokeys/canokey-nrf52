@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-set(CROSS_COMPILE /usr/bin/arm-none-eabi-)
-set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/toolchain.cmake)
+option(ENABLE_DEBUG_OUTPUT "Print debug messages" OFF)
 
 project(canokey-nrf52 C ASM)
 set(TARGET canokey)
@@ -29,13 +28,16 @@ add_definitions(-DFLOAT_ABI_HARD)
 
 set(CMAKE_C_STANDARD 11)
 set(COMMON_COMPILE_FLAGS "-mcpu=cortex-m4 -mthumb -mabi=aapcs -mfloat-abi=hard -mfpu=fpv4-sp-d16")
-set(EXTRA_COMPILE_FLAGS "-ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin -fshort-enums -g3 -O0")
+set(EXTRA_COMPILE_FLAGS "-ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin -fshort-enums")
 
 set(WARNING_FLAGS "-Wall")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_COMPILE_FLAGS} ${WARNING_FLAGS} ${EXTRA_COMPILE_FLAGS} ${DEFINITIONS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_COMPILE_FLAGS} ${WARNING_FLAGS} ${EXTRA_COMPILE_FLAGS} ${DEFINITIONS}")
 set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${COMMON_COMPILE_FLAGS}")
+
+set(CMAKE_C_FLAGS_DEBUG "-g3 -Og")
+set(CMAKE_C_FLAGS_RELEASE "-Os")
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${NRF5_SDK_DIR}/modules/nrfx/mdk -T ${LINKER_SCRIPT} -Wl,--gc-sections -Wl,-Map=${TARGET}.map --specs=nano.specs")
 
