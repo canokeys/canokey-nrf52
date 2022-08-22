@@ -162,12 +162,6 @@ Reading commands from STDIN
 < 90 00 : Normal processing.
 > 00 20 00 00 06 31 32 33 34 35 36 
 < 90 00 : Normal processing.
-> 00 FF 01 01 09 03 B0 05 72 03 00 B3 99 00 
-< 6F 00 : No precise diagnosis.
-> 00 FF 01 01 03 03 91 00 
-< 90 00 : Normal processing.
-> 00 FF 01 01 06 03 A0 44 00 04 20 
-< 6F 00 : No precise diagnosis.
 > 00 30 00 00 04 61 eb fc 55
 < 90 00 : Normal processing.
 > 00 01 00 00 20 cc d3 ee 4d ea 2a 3c ca d8 ce 3d 6a 47 f5 45 9c 80 79 7a d9 15 d6 f4 62 8b 5d 36 ef f2 76 d6 87
