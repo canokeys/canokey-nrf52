@@ -1,5 +1,7 @@
 # CanoKey on nRF52840
 
+**WARNING: THIS CANOKEY PORT IS IN VERY EARLY STAGE AND UNDER ACTIVE DEVELOPMENT. THE CODE IS NOT TESTED, IT MAY OR MAY NOT WORK, PLEASE USE AT YOUR OWN RISK.**
+
 CanoKey is an open-source USB security token, providing the following functions:
 
 - OpenPGP Card V3.4 (RSA, ECDSA, ED25519 supported)
