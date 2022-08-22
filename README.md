@@ -2,6 +2,8 @@
 
 **WARNING: THIS CANOKEY PORT IS IN VERY EARLY STAGE AND UNDER ACTIVE DEVELOPMENT. THE CODE IS NOT TESTED, IT MAY OR MAY NOT WORK, PLEASE USE AT YOUR OWN RISK.**
 
+**警告：本项目仍处于非常早期的开发阶段。该代码未经过严格测试，并且可能完全无法工作，请自行承担使用风险。**
+
 CanoKey is an open-source USB security token, providing the following functions:
 
 - OpenPGP Card V3.4 (RSA, ECDSA, ED25519 supported)
