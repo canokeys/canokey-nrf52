@@ -35,7 +35,7 @@ The nRF52840 Dongle is a small, low-cost USB dongle designed by Nordic Semicondu
 - [nRF52840 Dongle](https://www.nordicsemi.com/Software-and-tools/Development-Kits/nRF52840-Dongle)
 - [makerdiary nRF52840 Dongle](https://makerdiary.com/products/nrf52840-mdk-usb-dongle)
 - [makerdiary nRF52840 MDK USB Dongle w/ Case](https://makerdiary.com/collections/frontpage/products/nrf52840-mdk-usb-dongle-w-case)
-- [Ebyte E104-BT5040UA](https://www.ebyte.com/en/product-view-news.html?id=1267)
+- [Ebyte E104-BT5040U](https://www.ebyte.com/en/product-view-news.html?id=1185)
 
 Your can use any of them, by selecting the corresponding board in the `CMakeLists.txt` file:
 
