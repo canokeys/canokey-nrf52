@@ -30,7 +30,7 @@ This CanoKey-nRF52 implementation is based on Nordic nRF52840 MCU, features 1MB 
 
 ### NRF52840 Dongle and variants
 
-The nRF52840 Dongle is a small, low-cost USB dongle designed by Nordic Semiconductor, with a small USB Key form factor. It's often referred to as PCA10056 in the nRF52840 SDK. There exists multiple compatible boards in the market, including:
+The nRF52840 Dongle is a small, low-cost USB dongle designed by Nordic Semiconductor, with a small USB Key form factor. It's often referred to as PCA10059 in the nRF52840 SDK. There exists multiple compatible boards in the market, including:
 
 - [nRF52840 Dongle](https://www.nordicsemi.com/Software-and-tools/Development-Kits/nRF52840-Dongle)
 - [makerdiary nRF52840 Dongle](https://makerdiary.com/products/nrf52840-mdk-usb-dongle)
