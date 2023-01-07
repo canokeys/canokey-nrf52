@@ -92,7 +92,7 @@ Build steps:
 ```shell
 # clone this repo and all the submodules
 # in the top-level folder
-$ git submodule update --init
+$ git submodule update --init --recursive
 
 $ mkdir build
 $ cd build
