@@ -19,9 +19,9 @@ void usb_resources_alloc(void) {
   EP_TABLE.ccid = ep++;
   IFACE_TABLE.ccid = iface++;
 
-  if (cfg_is_kbd_interface_enable()) {
+  //if (cfg_is_kbd_interface_enable()) {
     EP_TABLE.kbd_hid = ep;
     IFACE_TABLE.kbd_hid = iface;
-  }
+  //}
 
 }
