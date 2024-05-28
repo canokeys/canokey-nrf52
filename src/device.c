@@ -53,8 +53,9 @@ void timer_touch_handler(nrf_timer_event_t event_type, void *p_context) {
 }
 
 void device_set_timeout(void (*callback)(void), uint16_t timeout) {
+    // DBG_MSG("CB=%p Time=%hu\n", callback, timeout);
+    nrfx_timer_disable(&m_timer_timeout);
     if(timeout == 0) {
-        nrfx_timer_disable(&m_timer_timeout);
         return;
     }
 
