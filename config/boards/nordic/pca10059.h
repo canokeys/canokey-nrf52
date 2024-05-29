@@ -84,6 +84,10 @@ extern "C" {
 
 #define BSP_SELF_PINRESET_PIN NRF_GPIO_PIN_MAP(0,19)
 
+#define RX_PIN_NUMBER  NRF_GPIO_PIN_MAP(1,10)
+#define TX_PIN_NUMBER  NRF_GPIO_PIN_MAP(1,13)
+#define CTS_PIN_NUMBER NRF_GPIO_PIN_MAP(1,15)
+#define RTS_PIN_NUMBER NRF_GPIO_PIN_MAP(0,2)
 #define HWFC           false
 
 #ifdef __cplusplus
