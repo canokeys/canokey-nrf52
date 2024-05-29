@@ -5,9 +5,9 @@ GROUP(-lgcc -lc -lnosys)
 
 MEMORY
 {
-  /* Bootloader will occupy 0xF4000 - 0x100000 */
-  FLASH (rx) : ORIGIN = 0x00001000, LENGTH = 0x9f000  /* 636 KB */
-  LFS (rw)   : ORIGIN = 0x000b0000, LENGTH = 0x40000  /* 256 KB littlefs */
+  /* Bootloader will occupy 0xE0000 - 0x100000 */
+  FLASH (rx) : ORIGIN = 0x00001000, LENGTH = 0x9f000  /* 632 KB */
+  LFS (rw)   : ORIGIN = 0x000a0000, LENGTH = 0x40000  /* 256 KB littlefs */
   RAM (rwx)  : ORIGIN = 0x20000008, LENGTH = 0x3fff8
 }
 
