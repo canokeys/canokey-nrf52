@@ -44,6 +44,17 @@ int admin_vendor_hw_variant(const CAPDU *capdu, RAPDU *rapdu) {
   return 0;
 }
 
+int admin_vendor_hw_sn(const CAPDU *capdu, RAPDU *rapdu) {
+  UNUSED(capdu);
+
+  const size_t snlen = 8;
+  memcpy(RDATA, NRF_FICR->DEVICEID, snlen);
+  LL = snlen;
+  if (LL > LE) LL = LE;
+
+  return 0;
+}
+
 int admin_vendor_version(const CAPDU *capdu, RAPDU *rapdu) {
   UNUSED(capdu);
 
