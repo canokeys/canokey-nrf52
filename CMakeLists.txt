@@ -19,6 +19,8 @@ add_definitions(-DMBR_PRESENT)
 add_definitions(-DCFG_BOARD=${CANOKEY_BOARD})
 add_definitions(-DCFG_TUSB_MCU=OPT_MCU_NRF5X)
 add_definitions(-DMBEDTLS_CONFIG_FILE="${BASE_DIR}/config/mbedtls_config.h")
+# simulate touching for dumb dongles with no hardware buttons
+# add_definitions(-DDUMB_DONGLE)
 
 # nrf5 sdk configs
 add_definitions(-DCUSTOM_BOARD_INC=board_selection)

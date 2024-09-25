@@ -40,6 +40,14 @@ inline static bool btn_down() {
     return bsp_board_button_state_get(BSP_BOARD_BUTTON_0);
 }
 
+/* Only works when DUMB_DONGLE macro is enabled. */
+int testmode_emulate_user_presence(void) {
+  if (!device_is_blinking()) return 0; // user only touches while blinking
+
+  set_touch_result(TOUCH_SHORT);
+  return 0;
+}
+
 static void (*tim_callback)(void);
 
 // every 10ms
